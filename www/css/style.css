@@ -1,8 +1,29 @@
-body {
+html {
+  height: 100%;
+}
+
+html body {
+  height: 100%;
   margin: 0;
 }
 
-body header {
-  background-color: blue;
-  height: 100px;
+html body header {
+  background-color: lightblue;
+  height: 70px;
+  font-size: 45px;
+  line-height: 70px;
+  color: white;
+  padding: 0 40px;
+}
+
+html body main {
+  display: inline-block;
+  max-width: 50%;
+  height: calc(100%-70px);
+}
+
+html body aside {
+  display: inline-block;
+  max-width: 50%;
+  background-color: #22addb;
 }
