@@ -4,15 +4,8 @@ const bodyParser = require("body-parser")
 const connectToDb = require('./db')
 const contactRoutes = require("./API/contactRoutes")
 const port = process.env.PORT || 3000
-
-// const session = require("express-session")
-// const MongoStore = require("connect-mongo")(session)
-// const settings = require("./config/settings.json")
-// const connectToDb = require("./config/db")
-// const tagRoutes = require("./API/tagRoutes")
-// const ingredientRoutes = require("./API/ingredientRoutes")
-
-
+const Sass = require('./sass');
+const config = require('./config.json');
 
 connectToDb()
 
@@ -29,8 +22,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './www/index.html'));
 });
 
-const Sass = require('./sass');
-const config = require('./config.json');
 
 for (let conf of config.sass) {
   new Sass(conf);
