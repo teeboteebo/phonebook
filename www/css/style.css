@@ -1,4 +1,6 @@
 html {
+  font-family: sans-serif;
+  color: #333;
   height: 100%;
 }
 
@@ -11,10 +13,10 @@ html body {
 html body header {
   background-color: #276cd4;
   height: 70px;
-  font-size: 45px;
+  font-size: 36px;
   line-height: 70px;
   color: white;
-  padding: 0 40px;
+  padding: 0 20px;
 }
 
 html body main {
@@ -41,19 +43,13 @@ html body main .contact-information {
     right: 0;
     height: 100%;
   }
-  html body main .contact-information * {
-    visibility: hidden;
-  }
   html body main .contact-information.open {
     transition: all 0.5s;
     left: 0;
   }
-  html body main .contact-information.open * {
-    visibility: visible;
-  }
 }
 
-html body main .contact-information .back-button {
+html body main .contact-information .btn {
   border: 1px solid #276cd4;
   border-radius: 4px;
   font-size: 16px;
@@ -62,10 +58,24 @@ html body main .contact-information .back-button {
   background-color: transparent;
 }
 
-html body main .contact-information .back-button:hover {
+html body main .contact-information .btn:hover {
   background-color: #276cd4;
   color: #fff;
   cursor: pointer;
+}
+
+html body main .contact-information .bottom-buttons {
+  margin: 32px auto;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-between;
+}
+
+html body main .contact-information .bottom-buttons .btn {
+  flex: 1;
+  font-size: 18px;
+  margin-bottom: 0;
+  max-width: 40%;
 }
 
 html body main .contact-information .inputs {
@@ -100,11 +110,29 @@ html body main .contact-information .contact-info {
   font-family: sans-serif;
   margin: 0 auto;
   max-width: 500px;
-  background-color: #999;
 }
 
-html body main .contact-information .contact-info .contact.names .text-field.first {
+html body main .contact-information .contact-info .contact-names .text-field.first {
   font-weight: bold;
+  color: #333;
+}
+
+html body main .contact-information .contact-info .contact-names .text-field {
+  font-size: 32px;
+  color: #276cd4;
+}
+
+html body main .contact-information .contact-info .contact-numbers,
+html body main .contact-information .contact-info .contact-emails {
+  margin-top: 32px;
+  font-size: 20px;
+}
+
+html body main .contact-information .contact-info .contact-numbers .number-item,
+html body main .contact-information .contact-info .contact-numbers .email-item,
+html body main .contact-information .contact-info .contact-emails .number-item,
+html body main .contact-information .contact-info .contact-emails .email-item {
+  margin-bottom: 12px;
 }
 
 html body main .contact-list {
@@ -116,7 +144,7 @@ html body main .contact-list {
 
 html body main .contact-list .list-item {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 15px 20px;
 }
 
 html body main .contact-list .list-item:hover {

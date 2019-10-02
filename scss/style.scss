@@ -1,6 +1,9 @@
 $primary: #276cd4;
 
 html {
+  font-family: sans-serif;
+  color: #333;
+
   height: 100%;
   body {
     min-height: 100vh;
@@ -9,10 +12,10 @@ html {
     header {
       background-color: $primary;
       height: 70px;
-      font-size: 45px;
+      font-size: 36px;
       line-height: 70px;
       color: white;
-      padding: 0 40px;
+      padding: 0 20px;
     }
     main {
       display: flex;
@@ -32,18 +35,12 @@ html {
           top: 0;
           right: 0;
           height: 100%;
-          & * {
-            visibility: hidden;
-          }
           &.open {
             transition: all 0.5s;
             left: 0;
-            & * {
-              visibility: visible;
-            }
           }
         }
-        .back-button {
+        .btn {
           border: 1px solid $primary;
           border-radius: 4px;
           font-size: 16px;
@@ -54,6 +51,18 @@ html {
             background-color: $primary;
             color: #fff;
             cursor: pointer;
+          }
+        }
+        .bottom-buttons {
+          margin: 32px auto;
+          max-width: 500px;
+          display: flex;
+          justify-content: space-between;
+          .btn {
+            flex: 1;
+            font-size: 18px;
+            margin-bottom: 0;
+            max-width: 40%;
           }
         }
         .inputs {
@@ -81,12 +90,29 @@ html {
           font-family: sans-serif;
           margin: 0 auto;
           max-width: 500px;
-          background-color: #999;
-          .contact.names {
+          .contact-names {
             .text-field.first {
               font-weight: bold;
+              color: #333;
+            }
+            .text-field {
+              font-size: 32px;
+              color: $primary;
             }
           }
+          .contact-numbers,
+          .contact-emails {
+            margin-top: 32px;
+            font-size: 20px;
+            .number-item,
+            .email-item {
+              margin-bottom: 12px;
+            }
+          }
+        }
+        .bottom-buttons {
+          // margin: 0 auto;
+          // max-width: 500px;
         }
       }
       .contact-list {
@@ -96,7 +122,7 @@ html {
         background-color: lightblue;
         .list-item {
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-          padding: 10px;
+          padding: 15px 20px;
           &:hover {
             cursor: pointer;
             background-color: #81a2ad;
