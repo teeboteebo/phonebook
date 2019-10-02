@@ -30,8 +30,31 @@ html body main .contact-information {
   padding: 10px;
 }
 
+@media screen and (max-width: 991px) {
+  html body main .contact-information {
+    display: none;
+  }
+  html body main .contact-information.open {
+    display: block;
+  }
+}
+
 html body main .contact-list {
+  font-size: 24px;
   flex: 1;
   background-color: lightblue;
+}
+
+html body main .contact-list .list-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 10px;
+}
+
+html body main .contact-list .list-item:hover {
+  cursor: pointer;
+  background-color: #81a2ad;
+}
+
+html body main .contact-list .list-item .active {
+  background-color: #81a2ad;
 }

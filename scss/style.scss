@@ -18,15 +18,31 @@ html {
       overflow: hidden;
       height: calc(100vh - 70px);
       .contact-information {
+        @media screen and (max-width: 991px){
+          display: none;
+          &.open {
+            display: block;
+          }
+        }
         flex: 2;
         background-color: #eee;
         padding: 10px;
       }
       .contact-list {
+        font-size: 24px;
         flex: 1;
         background-color: lightblue;
-        padding: 10px;
-
+        .list-item {
+          border-bottom: 1px solid rgba(0,0,0,0.1);
+          padding: 10px;
+          &:hover {
+            cursor: pointer;
+            background-color: #81a2ad;
+          }
+          & .active {
+            background-color: #81a2ad;
+          }
+        }
       }
     }
     
