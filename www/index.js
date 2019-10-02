@@ -1,125 +1,136 @@
-let header = document.createElement('header');
-header.innerHTML = 'Super duper telefonbok'
-header.setAttribute('class', 'header')
+class App {
 
-let main = document.createElement('main')
+  constructor() {
+    this.setupInitialGUI();
+    this.contactHandler = new ContactHandler(this);
+  }
 
-document.body.append(header, main);
-
-
-let listSection = document.createElement('section')
-listSection.setAttribute('class', 'contact-list')
-
-let contactSection = document.createElement('section');
-contactSection.innerHTML = 'aside sektion med kontaktinformation (empty as default)'
-contactSection.setAttribute('class', 'contact-information')
-
-main.append(listSection, contactSection)
-
-let button = document.createElement('button')
-button.setAttribute('class', 'test-button')
+  setupInitialGUI() {
+    this.createEl('header', 'Super duper telefonbok', { class: 'header' });
+    this.createEl('main');
+    this.createEl('section', '', { class: 'contact-list' }, document.querySelector('main'));
+    this.createEl('section', '', { class: 'contact-information' }, document.querySelector('main'));
+  }
 
 
-contactSection.append(button)
+  createEl(newElName, html = '', attributes = {}, root = document.body) {
+    let newEl = document.createElement(newElName);
+    newEl.innerHTML = html;
+    for (let [key, val] of Object.entries(attributes)) {
+      newEl.setAttribute(key, val);
+    }
+    root.append(newEl);
+  }
 
-const loadContacts = async () => {
-  console.log('running');
-
-  let allContacts = await fetch('/api/contacts')
-  let json = await allContacts.json()
-  return json
 }
 
-const loadAndMountContactsToList = async () => {
-  let contacts = await loadContacts()
-  let sortedByFirstName = [...contacts].sort((a, b) => a.firstName.localeCompare(b.firstName, 'sv'))
-  let contactList = '<ul>' + sortedByFirstName.map(contact => {
-    return `<li class="list-item" id="${contact._id}">` + contact.firstName + (contact.lastName ? ' ' + contact.lastName : '') + '</li>'
-  }).join('') + '</ul>'
+class ContactHandler {
+  constructor() {
+    // run submethods
+    this.loadAndMountContactsToList();
+    this.checkURLandUpdateInfo(window.location.pathname);
+    this.addListeners();
+  }
 
+  addListeners() {
+    listen('click', '.list-item', e => {
+      this.findContactAndOpen(e.target.id)
+    });
+    listen('click', '.back-button', e => {
+      console.log('running');
+      this.clearContactSection();
+    });
+  }
 
+  loadContacts = async () => {
+    console.log('running');
+    let allContacts = await fetch('/api/contacts')
+    let json = await allContacts.json()
+    return json
+  }
 
-  listSection.innerHTML += contactList
-}
-loadAndMountContactsToList()
+  loadAndMountContactsToList = async () => {
+    let contacts = await this.loadContacts()
+    let sortedByFirstName = [...contacts].sort((a, b) => a.firstName.localeCompare(b.firstName, 'sv'))
+    let contactList = '<ul>' + sortedByFirstName.map(contact => {
+      return `<li class="list-item" id="${contact._id}">` + contact.firstName + (contact.lastName ? ' ' + contact.lastName : '') + '</li>'
+    }).join('') + '</ul>'
+    let listSection = document.querySelector('.contact-list')
+    listSection.innerHTML = contactList
+  }
 
-const mountContact = (contact) => {
-  let firstName = document.createElement('p')
-  firstName.innerHTML = contact.firstName
-  let lastName = document.createElement('p')
-  lastName.innerHTML = contact.lastName
-  return [firstName, lastName]
-}
-
-const findContactAndOpen = async(id) => {
-  contactInfo = document.querySelector('.contact-information')
-  contactInfo.setAttribute('class', contactInfo.className + ' open')
-  let contactContent = await fetch(`/api/contacts/id/${id}`)
-  let json = await contactContent.json()
-  if (json) {
-    console.log(mountContact(json))
-    contactInfo.innerHTML = `<input type="text" value=${json.firstName} /><p>${json.lastName}</p>`
-    history.pushState({}, null, '/kontakt/' + json._id);
+  clearContactSection = () => {
+    let contactInfo = document.querySelector('.contact-information')
+    contactInfo.setAttribute('class', contactInfo.className.replace('open', ''))
+    contactInfo.innerHTML = ''
+    history.pushState({}, null, '/');
+  }
+  checkURLandUpdateInfo = async (url) => {
+    const urlId = url.substring(url.lastIndexOf('/') + 1)
+    if (urlId) { this.findContactAndOpen(urlId) }
+  }
+  findContactAndOpen = async (id) => {
+    let contactInfo = document.querySelector('.contact-information')
+    contactInfo.setAttribute('class', contactInfo.className + ' open')
+    let contactContent = await fetch(`/api/contacts/id/${id}`)
+    let json = await contactContent.json()
+    if (json) {
+      contactInfo.innerHTML = `
+        <div>
+          <button class="back-button">Stäng</button>
+        </div>
+        <div class="inputs">
+          <div class="input-grp">
+            <label class="input-label" for="${json._id + '-firstname'}">Förnamn</label><br />
+            <input class="input-field" id="${json._id + '-firstName'}" type="text" value=${json.firstName} /> <br />
+          </div>
+          <div class="input-grp">
+            <label class="input-label" for="${json._id + '-lastName'}">Efternamn</label><br />
+            <input class="input-field" id="${json._id + '-lastName'}" type="text" value=${json.lastName} /> <br />
+          </div>
+        </div>
+        `
+      history.pushState({}, null, '/kontakt/' + json._id);
+    }
   }
 }
 
 
 
-
-
-
-
 const [listen, unlisten] = (() => {
- 
+
   let listeningOnType = {};
   let listeners = [];
- 
-  function listen(eventType, cssSelector, func){
+
+  function listen(eventType, cssSelector, func) {
     // Register a "listener"
-    let listener = {eventType, cssSelector, func};
+    let listener = { eventType, cssSelector, func };
     listeners.push(listener);
     // If no listener on window[eventType] register a 
     // a real/raw js-listener
-    if(!listeningOnType[eventType]){
+    if (!listeningOnType[eventType]) {
       // add event listener for this type on the whole window
       window.addEventListener(eventType, e => {
         listeners
           .filter(x => x.eventType === eventType)
           .forEach(listener => {
-            if(e.target.closest(listener.cssSelector)){
+            if (e.target.closest(listener.cssSelector)) {
               listener.func(e);
             }
-        });
+          });
       });
       listeningOnType[eventType] = true;
     }
     return listener;
   }
- 
-  function unlisten(listener){
+
+  function unlisten(listener) {
     listeners.splice(listeners.indexOf(listener), 1);
   }
- 
+
   return [listen, unlisten];
- 
+
 })();
 
-// We can listen
-let listener1 = listen('click', '.list-item', e => {
-  findContactAndOpen(e.target.id)
-  
-});
-let listener2 = listen('click', 'button', e => {
-  console.log('You clicked a button');
-});
 
-
-// Show the contact based on url
-const checkURLandUpdateInfo = async(url) => {
-  const urlId = url.substring(url.lastIndexOf('/') + 1)
-  if (urlId){findContactAndOpen(urlId)}
-}
-checkURLandUpdateInfo(window.location.pathname)
-// We can unlisten - try commenting in these lines:
-// unlisten(listener1);
-// unlisten(listener2);
+new App()
