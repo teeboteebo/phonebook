@@ -61,7 +61,7 @@ class ContactHandler {
 
   clearContactSection = () => {
     let contactInfo = document.querySelector('.contact-information')
-    contactInfo.setAttribute('class', contactInfo.className.replace('open', ''))
+    contactInfo.setAttribute('class', contactInfo.className.replace(' open', ''))
     contactInfo.innerHTML = ''
     history.pushState({}, null, '/');
   }
@@ -71,7 +71,8 @@ class ContactHandler {
   }
   findContactAndOpen = async (id) => {
     let contactInfo = document.querySelector('.contact-information')
-    contactInfo.setAttribute('class', contactInfo.className + ' open')
+    contactInfo.setAttribute('class', 'contact-information open')
+    
     let contactContent = await fetch(`/api/contacts/id/${id}`)
     let json = await contactContent.json()
     if (json) {
@@ -79,14 +80,10 @@ class ContactHandler {
         <div>
           <button class="back-button">Stäng</button>
         </div>
-        <div class="inputs">
-          <div class="input-grp">
-            <label class="input-label" for="${json._id + '-firstname'}">Förnamn</label><br />
-            <input class="input-field" id="${json._id + '-firstName'}" type="text" value=${json.firstName} /> <br />
-          </div>
-          <div class="input-grp">
-            <label class="input-label" for="${json._id + '-lastName'}">Efternamn</label><br />
-            <input class="input-field" id="${json._id + '-lastName'}" type="text" value=${json.lastName} /> <br />
+        <div class="contact-info">
+          <div class="contact-names">
+            <span class="text-field first" id="${json._id + '-firstName'}">${json.firstName}</span>
+            <span class="text-field" id="${json._id + '-lastName'}">${json.lastName}</span>
           </div>
         </div>
         `
@@ -95,6 +92,19 @@ class ContactHandler {
   }
 }
 
+// <div>
+//           <button class="back-button">Stäng</button>
+//         </div>
+//         <div class="inputs">
+//           <div class="input-grp">
+//             <label class="input-label" for="${json._id + '-firstname'}">Förnamn</label><br />
+//             <input class="input-field" id="${json._id + '-firstName'}" type="text" value=${json.firstName} /> <br />
+//           </div>
+//           <div class="input-grp">
+//             <label class="input-label" for="${json._id + '-lastName'}">Efternamn</label><br />
+//             <input class="input-field" id="${json._id + '-lastName'}" type="text" value=${json.lastName} /> <br />
+//           </div>
+//         </div>
 
 
 const [listen, unlisten] = (() => {
