@@ -2,12 +2,18 @@ let header = document.createElement('header');
 header.innerHTML = 'Super duper telefonbok'
 header.setAttribute('class', 'header')
 
-let main = document.createElement('main');
-main.innerHTML = 'main sektion med kontaktinformation'
-main.setAttribute('class', 'contact-information')
+let main = document.createElement('main')
 
-let aside = document.createElement('aside')
-aside.innerHTML = 'aside sektion med lista över alla kontakter'
-aside.setAttribute('class', 'contact-list')
+document.body.append(header, main);
 
-document.body.append(header, main, aside);
+
+let listSection = document.createElement('section')
+let listContent = `<ul><li>Olle Hallberg</li></ul>`
+listSection.innerHTML = `main sektion med lista över alla kontakter <br /> ${listContent}`
+listSection.setAttribute('class', 'contact-list')
+
+let contactSection = document.createElement('section');
+contactSection.innerHTML = 'aside sektion med kontaktinformation (empty as default)'
+contactSection.setAttribute('class', 'contact-information')
+
+main.append(listSection, contactSection)

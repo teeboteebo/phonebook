@@ -3,12 +3,13 @@ html {
 }
 
 html body {
+  min-height: 100vh;
   height: 100%;
   margin: 0;
 }
 
 html body header {
-  background-color: lightblue;
+  background-color: #276cd4;
   height: 70px;
   font-size: 45px;
   line-height: 70px;
@@ -17,13 +18,20 @@ html body header {
 }
 
 html body main {
-  display: inline-block;
-  max-width: 50%;
-  height: calc(100%-70px);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  height: calc(100vh - 70px);
 }
 
-html body aside {
-  display: inline-block;
-  max-width: 50%;
-  background-color: #22addb;
+html body main .contact-information {
+  flex: 2;
+  background-color: #eee;
+  padding: 10px;
+}
+
+html body main .contact-list {
+  flex: 1;
+  background-color: lightblue;
+  padding: 10px;
 }

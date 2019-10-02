@@ -1,10 +1,11 @@
 html {
   height: 100%;
   body {
+    min-height: 100vh;
     height: 100%;
     margin: 0;
     header {
-      background-color: lightblue;
+      background-color: #276cd4;
       height: 70px;
       font-size: 45px;
       line-height: 70px;
@@ -12,15 +13,22 @@ html {
       padding: 0 40px;
     }
     main {
-      display: inline-block;
-      max-width: 50%;
-      height: calc(100%-70px);
-    }
-    aside {
-      display: inline-block;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      height: calc(100vh - 70px);
+      .contact-information {
+        flex: 2;
+        background-color: #eee;
+        padding: 10px;
+      }
+      .contact-list {
+        flex: 1;
+        background-color: lightblue;
+        padding: 10px;
 
-      max-width: 50%;
-      background-color: rgb(34, 173, 219);
+      }
     }
+    
   }
 }
