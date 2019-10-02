@@ -6,7 +6,7 @@ class App {
   }
 
   setupInitialGUI() {
-    this.createEl('header', 'Super duper telefonbok', { class: 'header' });
+    this.createEl('header', '<i class="far fa-address-card"></i> Kontakter', { class: 'header' });
     this.createEl('main');
     this.createEl('section', '', { class: 'contact-list' }, document.querySelector('main'));
     this.createEl('section', '', { class: 'contact-information' }, document.querySelector('main'));
@@ -30,20 +30,28 @@ class ContactHandler {
     this.loadAndMountContactsToList();
     this.checkURLandUpdateInfo(window.location.pathname);
     this.addListeners();
+    this.currentContact = ''
   }
 
   addListeners() {
     listen('click', '.list-item', e => {
       this.findContactAndOpen(e.target.id)
     });
-    listen('click', '.back-button', e => {
-      console.log('running');
+    listen('click', '.back-btn', e => {
       this.clearContactSection();
     });
+    listen('click', '.reset-btn', e => {
+      console.log(e.target);
+    })
+    listen('click', '.edit-btn', e => {
+      this.renderEditLayout(this.currentContact)
+    })
+    listen('click', '.save-btn', e => {
+      console.log(e.target);
+    })
   }
 
   loadContacts = async () => {
-    console.log('running');
     let allContacts = await fetch('/api/contacts')
     let json = await allContacts.json()
     return json
@@ -64,33 +72,80 @@ class ContactHandler {
     contactInfo.setAttribute('class', contactInfo.className.replace(' open', ''))
     contactInfo.innerHTML = ''
     history.pushState({}, null, '/');
+    this.currentContact = ''
   }
   checkURLandUpdateInfo = async (url) => {
     const urlId = url.substring(url.lastIndexOf('/') + 1)
-    if (urlId) { this.findContactAndOpen(urlId) }
+    if (urlId) { 
+      this.findContactAndOpen(urlId) 
+    }
+  }
+  renderEditLayout = (contact) => {
+    console.log(contact);
+    
+    // let content = `
+    // <div>
+    //   <button class="btn back-btn">Stäng</button>
+    // </div>
+    // <div class="contact-info">
+    //   <div class="contact-names">
+    //     <span class="text-field first" id="${json._id + '-firstName'}">${json.firstName} </span>
+    //     <span class="text-field" id="${json._id + '-lastName'}">${json.lastName}</span>
+    //   </div>
+    //   <ul class="contact-numbers">
+    //     <li class="number-item"><i class="fas fa-phone-alt"></i> 0709-629276</li>
+    //     <li class="number-item"><i class="fas fa-phone-alt"></i> 1234-567890</li>
+    //   </ul>
+    //   <ul class="contact-emails">
+    //     <li class="email-item"><i class="fas fa-envelope"></i> jesper.asplund95@gmail.com</li>
+    //     <li class="email-item"><i class="fas fa-envelope"></i> thisismyemail@gmail.com</li>
+    //   </ul>
+    // </div>
+    // <div class="bottom-buttons">
+    //   <button class="btn cancel-btn">Avbryt</button>
+    //   <button class="btn save-btn">Spara</button>
+    // </div>
+    // `
   }
   findContactAndOpen = async (id) => {
     let contactInfo = document.querySelector('.contact-information')
     contactInfo.setAttribute('class', 'contact-information open')
-    
+
     let contactContent = await fetch(`/api/contacts/id/${id}`)
     let json = await contactContent.json()
     if (json) {
       contactInfo.innerHTML = `
         <div>
-          <button class="back-button">Stäng</button>
+          <button class="btn back-btn">Stäng</button>
         </div>
         <div class="contact-info">
           <div class="contact-names">
-            <span class="text-field first" id="${json._id + '-firstName'}">${json.firstName}</span>
+            <span class="text-field first" id="${json._id + '-firstName'}">${json.firstName} </span>
             <span class="text-field" id="${json._id + '-lastName'}">${json.lastName}</span>
           </div>
+          <ul class="contact-numbers">
+            <li class="number-item"><i class="fas fa-phone-alt"></i> 0709-629276</li>
+            <li class="number-item"><i class="fas fa-phone-alt"></i> 1234-567890</li>
+          </ul>
+          <ul class="contact-emails">
+            <li class="email-item"><i class="fas fa-envelope"></i> jesper.asplund95@gmail.com</li>
+            <li class="email-item"><i class="fas fa-envelope"></i> thisismyemail@gmail.com</li>
+          </ul>
+        </div>
+        <div class="bottom-buttons">
+          <button class="btn reset-btn">Återställ</button>
+          <button class="btn edit-btn">Redigera</button>
         </div>
         `
       history.pushState({}, null, '/kontakt/' + json._id);
+      this.currentContact = json
     }
   }
 }
+
+/*${json.numbers.map(number => {
+              return `<li class="number-item"><i class="fas fa-phone-alt"></i> ${number}</li>`
+            })}*/
 
 // <div>
 //           <button class="back-button">Stäng</button>

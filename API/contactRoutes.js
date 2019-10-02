@@ -10,9 +10,7 @@ router.get("/api/contacts", async (req, res) => {
 })
 
 router.get("/api/contacts/id/:id", async (req, res) => {  
-  Contact.findById(req.params.id).then(data => {
-    console.log('sending: ', data)
-    
+  Contact.findById(req.params.id).then(data => {    
     res.status(200).send(data)
   })
 })
