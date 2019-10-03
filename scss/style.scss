@@ -73,6 +73,17 @@ html {
           width: 70%;
           font-size: 24px;
           padding: 5px;
+          margin-bottom: 10px;
+        }
+        .reset-time, .future-time {
+          margin-bottom: 10px;
+          cursor: pointer;
+          &:hover {
+            color: $primary;
+          }
+        }
+        b {
+          font-weight: bold;
         }
 
         .contact-info {

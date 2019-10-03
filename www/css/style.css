@@ -86,6 +86,20 @@ html body main .contact-information input {
   width: 70%;
   font-size: 24px;
   padding: 5px;
+  margin-bottom: 10px;
+}
+
+html body main .contact-information .reset-time, html body main .contact-information .future-time {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+html body main .contact-information .reset-time:hover, html body main .contact-information .future-time:hover {
+  color: #276cd4;
+}
+
+html body main .contact-information b {
+  font-weight: bold;
 }
 
 html body main .contact-information .contact-info {

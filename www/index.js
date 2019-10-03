@@ -40,9 +40,6 @@ class ContactHandler {
     listen('click', '.back-btn', e => {
       this.clearContactSection();
     });
-    listen('click', '.reset-btn', e => {
-      console.log(e.target);
-    })
     listen('click', '.edit-btn', e => {
       this.renderEditLayout(this.currentContact)
     })
@@ -64,7 +61,9 @@ class ContactHandler {
     listen('click', '.remove-email', e => {
       this.removeField(e)
     })
-    
+    listen('click', '.reset-btn', e => {
+      this.renderHistory(this.currentContact)
+    })
   }
 
   loadContacts = async () => {
@@ -73,7 +72,7 @@ class ContactHandler {
     return json
   }
 
-  loadAndMountContactsToList = async () => {
+  loadAndMountContactsToList = async () => {    
     let contacts = await this.loadContacts()
     let sortedByFirstName = [...contacts].sort((a, b) => a.firstName.localeCompare(b.firstName, 'sv'))
     let contactList = '<ul>' + sortedByFirstName.map(contact => {
@@ -111,6 +110,30 @@ class ContactHandler {
   removeField = (e) => {
     e.target.parentNode.parentNode.removeChild(e.target.parentNode)
   }
+  renderHistory = (contact) => {
+    let contactInfo = document.querySelector('.contact-information')
+    
+    let content = `
+      <div>
+        <button class="btn back-btn">Stäng</button>
+      </div>
+      <ul class="contact-info">
+        <p style="margin-bottom: 20px">Klicka på önskat datum för att återställa version</p>
+        ${[...contact.future].reverse().map(data => {
+        return `<li class="future-time">${data.lastChanged}</li>`
+        }).join('')}
+        <li class="reset-time"><b>${contact.lastChanged} (Nuvarande)</b></li>
+        ${[...contact.history].reverse().map(data => {
+          return `<li class="reset-time">${data.lastChanged}</li>`
+        }).join('')}
+      </ul>
+      <div class="bottom-buttons">
+        <button class="btn cancel-btn">Avbryt</button>
+      </div>
+    `
+    contactInfo.innerHTML = content
+  }
+  
   saveUpdatedContact = async (contact) => {
     // const oldContactDate = contact.lastChanged
     let newContact = { ...contact }
@@ -135,6 +158,7 @@ class ContactHandler {
       body: JSON.stringify(newContact)
     })
     this.findContactAndOpen(contact._id)
+    this.loadAndMountContactsToList()
   }
   renderEditLayout = (contact) => {
     let contactInfo = document.querySelector('.contact-information')
