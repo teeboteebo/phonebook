@@ -54,7 +54,6 @@ html body main .contact-information .btn {
   border-radius: 4px;
   font-size: 16px;
   color: #276cd4;
-  margin-bottom: 20px;
   background-color: transparent;
 }
 
@@ -62,6 +61,11 @@ html body main .contact-information .btn:hover {
   background-color: #276cd4;
   color: #fff;
   cursor: pointer;
+}
+
+html body main .contact-information .add-email,
+html body main .contact-information .add-number {
+  margin: 15px 0;
 }
 
 html body main .contact-information .bottom-buttons {
@@ -78,37 +82,15 @@ html body main .contact-information .bottom-buttons .btn {
   max-width: 40%;
 }
 
-html body main .contact-information .inputs {
-  display: flex;
-  flex-direction: row;
-}
-
-@media screen and (max-width: 991px) {
-  html body main .contact-information .inputs {
-    flex-direction: column;
-  }
-}
-
-html body main .contact-information .inputs .input-grp {
-  flex: 1;
-  margin: 20px 10px 20px 0;
-}
-
-html body main .contact-information .inputs .input-grp .input-label {
-  font-family: sans-serif;
-  font-weight: 500;
-}
-
-html body main .contact-information .inputs .input-grp .input-field {
-  width: inherit;
+html body main .contact-information input {
+  width: 70%;
   font-size: 24px;
-  margin-top: 10px;
   padding: 5px;
 }
 
 html body main .contact-information .contact-info {
   font-family: sans-serif;
-  margin: 0 auto;
+  margin: 50px auto;
   max-width: 500px;
 }
 
