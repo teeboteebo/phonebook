@@ -47,8 +47,24 @@ class ContactHandler {
       this.renderEditLayout(this.currentContact)
     })
     listen('click', '.save-btn', e => {
-      console.log(e.target);
+      this.saveUpdatedContact(this.currentContact)
     })
+    listen('click', '.cancel-btn', e => {
+      this.findContactAndOpen(this.currentContact._id)
+    })
+    listen('click', '.add-number', e => {
+      this.addNumber()
+    })
+    listen('click', '.remove-number', e => {
+      this.removeField(e)
+    })
+    listen('click', '.add-email', e => {
+      this.addEmail()
+    })
+    listen('click', '.remove-email', e => {
+      this.removeField(e)
+    })
+    
   }
 
   loadContacts = async () => {
@@ -76,36 +92,81 @@ class ContactHandler {
   }
   checkURLandUpdateInfo = async (url) => {
     const urlId = url.substring(url.lastIndexOf('/') + 1)
-    if (urlId) { 
-      this.findContactAndOpen(urlId) 
+    if (urlId) {
+      this.findContactAndOpen(urlId)
     }
   }
+  addNumber = () => {
+    let newNumberField = document.createElement('li')
+    newNumberField.innerHTML = `<i class="fas fa-phone-alt"></i> <input class="number-input" placeholder="telefonnummer" type="text" /><button class="btn remove-number">X</button>`
+    newNumberField.setAttribute('class', 'number-item')
+    document.querySelector('.contact-numbers').append(newNumberField)
+  }
+  addEmail = () => {
+    let newEmailField = document.createElement('li')
+    newEmailField.innerHTML = `<i class="fas fa-envelope"></i> <input class="email-input" placeholder="telefonnummer" type="text" /><button class="btn remove-email">X</button>`
+    newEmailField.setAttribute('class', 'email-item')
+    document.querySelector('.contact-emails').append(newEmailField)
+  }
+  removeField = (e) => {
+    e.target.parentNode.parentNode.removeChild(e.target.parentNode)
+  }
+  saveUpdatedContact = async (contact) => {
+    // const oldContactDate = contact.lastChanged
+    let newContact = { ...contact }
+    let numbers = [...document.querySelectorAll('.number-input')].map(number => number.value)
+    let emails = [...document.querySelectorAll('.email-input')].map(number => number.value)
+    newContact.firstName = document.querySelector('.firstName-input').value
+    newContact.lastName = document.querySelector('.lastName-input').value
+    newContact.numbers = numbers
+    newContact.emails = emails
+    newContact.lastChanged = new Date()
+    let oldContact = {...contact}
+    delete oldContact.history
+    newContact.history.push({ ...oldContact })
+
+    console.log(newContact);
+
+    await fetch(`/api/contacts/edit`, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newContact)
+    })
+    this.findContactAndOpen(contact._id)
+  }
   renderEditLayout = (contact) => {
-    console.log(contact);
-    
-    // let content = `
-    // <div>
-    //   <button class="btn back-btn">Stäng</button>
-    // </div>
-    // <div class="contact-info">
-    //   <div class="contact-names">
-    //     <span class="text-field first" id="${json._id + '-firstName'}">${json.firstName} </span>
-    //     <span class="text-field" id="${json._id + '-lastName'}">${json.lastName}</span>
-    //   </div>
-    //   <ul class="contact-numbers">
-    //     <li class="number-item"><i class="fas fa-phone-alt"></i> 0709-629276</li>
-    //     <li class="number-item"><i class="fas fa-phone-alt"></i> 1234-567890</li>
-    //   </ul>
-    //   <ul class="contact-emails">
-    //     <li class="email-item"><i class="fas fa-envelope"></i> jesper.asplund95@gmail.com</li>
-    //     <li class="email-item"><i class="fas fa-envelope"></i> thisismyemail@gmail.com</li>
-    //   </ul>
-    // </div>
-    // <div class="bottom-buttons">
-    //   <button class="btn cancel-btn">Avbryt</button>
-    //   <button class="btn save-btn">Spara</button>
-    // </div>
-    // `
+    let contactInfo = document.querySelector('.contact-information')
+
+    let content = `
+      <div>
+        <button class="btn back-btn">Stäng</button>
+      </div>
+      <div class="contact-info">
+        <div class="contact-names">
+          <input class="text-field first firstName-input" value="${contact.firstName}" />
+          <input class="text-field lastName-input" value="${contact.lastName}" />
+        </div>
+        <ul class="contact-numbers">
+          ${contact.numbers.map((number, i) => {
+      return `<li class="number-item"><i class="fas fa-phone-alt"></i> <input class="number-input" value="${number}" type="text" /><button class="btn remove-number">X</button></li>`
+    }).join('')}
+        </ul>
+        <button class="btn add-number">Nytt nummer</button>
+        <ul class="contact-emails">
+          ${contact.emails.map((email, i) => {
+      return `<li class="number-item"><i class="fas fa-envelope"></i> <input class="email-input" value="${email}" type="text" /><button class="btn remove-email">X</button></li>`
+    }).join('')}
+        </ul>
+        <button class="btn add-email">Ny epost</button>
+      </div>
+      <div class="bottom-buttons">
+        <button class="btn cancel-btn">Avbryt</button>
+        <button class="btn save-btn">Spara</button>
+      </div>
+    `
+    contactInfo.innerHTML = content
   }
   findContactAndOpen = async (id) => {
     let contactInfo = document.querySelector('.contact-information')
@@ -124,12 +185,14 @@ class ContactHandler {
             <span class="text-field" id="${json._id + '-lastName'}">${json.lastName}</span>
           </div>
           <ul class="contact-numbers">
-            <li class="number-item"><i class="fas fa-phone-alt"></i> 0709-629276</li>
-            <li class="number-item"><i class="fas fa-phone-alt"></i> 1234-567890</li>
+            ${json.numbers.map(number => {
+        return `<li class="number-item"><i class="fas fa-phone-alt"></i> ${number}</li>`
+      }).join('')}
           </ul>
           <ul class="contact-emails">
-            <li class="email-item"><i class="fas fa-envelope"></i> jesper.asplund95@gmail.com</li>
-            <li class="email-item"><i class="fas fa-envelope"></i> thisismyemail@gmail.com</li>
+            ${json.emails.map(email => {
+        return `<li class="number-item"><i class="fas fa-envelope"></i> ${email}</li>`
+      }).join('')}
           </ul>
         </div>
         <div class="bottom-buttons">

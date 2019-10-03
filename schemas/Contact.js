@@ -8,7 +8,6 @@ let contactSchema = new Schema({
   emails: { type: Array },
   history: { type: Array },
   future: { type: Array },
-  added: { type: String },
   lastChanged: { type: String }
 })
 
