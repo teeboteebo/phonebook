@@ -14,8 +14,12 @@ router.get("/api/contacts/id/:id", async (req, res) => {
     res.status(200).send(data)
   })
 })
+router.post("/api/contacts/", async (req, res) => {  
+  let contact = new Contact(req.body)
+  await contact.save()
+  res.status(200).send(contact)
+})
 router.put("/api/contacts/edit/", async (req, res) => {  
-  console.log(req.body);
   let contact = await Contact.findById(req.body._id)
   contact.firstName = req.body.firstName
   contact.lastName = req.body.lastName
