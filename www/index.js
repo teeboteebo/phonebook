@@ -64,6 +64,15 @@ class ContactHandler {
     listen('click', '.reset-btn', e => {
       this.renderHistory(this.currentContact)
     })
+    listen('click', '.new-contact', e => {
+      this.renderNewContactLayout()
+    })
+    listen('click', '.save-new-btn', e => {
+      this.saveNewContact()
+    })
+    listen('click', '.reset-time', e => {
+      this.renderOlderVersionLayout(e.target.innerHTML)
+    })
   }
 
   loadContacts = async () => {
@@ -72,14 +81,21 @@ class ContactHandler {
     return json
   }
 
-  loadAndMountContactsToList = async () => {    
+  loadAndMountContactsToList = async () => {
     let contacts = await this.loadContacts()
     let sortedByFirstName = [...contacts].sort((a, b) => a.firstName.localeCompare(b.firstName, 'sv'))
-    let contactList = '<ul>' + sortedByFirstName.map(contact => {
+    let contactList = '<ul class="list">' + sortedByFirstName.map(contact => {
       return `<li class="list-item" id="${contact._id}">` + contact.firstName + (contact.lastName ? ' ' + contact.lastName : '') + '</li>'
     }).join('') + '</ul>'
+
+    let newBtn = document.createElement('button')
+    newBtn.setAttribute('class', 'new-contact')
+    newBtn.innerHTML = '<i class="fas fa-plus"></i>'
+
     let listSection = document.querySelector('.contact-list')
     listSection.innerHTML = contactList
+    listSection.append(newBtn)
+
   }
 
   clearContactSection = () => {
@@ -91,9 +107,12 @@ class ContactHandler {
   }
   checkURLandUpdateInfo = async (url) => {
     const urlId = url.substring(url.lastIndexOf('/') + 1)
-    if (urlId) {
+    if (urlId === 'ny-kontakt') {
+      this.renderNewContactLayout()
+    } else if (urlId) {
       this.findContactAndOpen(urlId)
     }
+
   }
   addNumber = () => {
     let newNumberField = document.createElement('li')
@@ -112,7 +131,7 @@ class ContactHandler {
   }
   renderHistory = (contact) => {
     let contactInfo = document.querySelector('.contact-information')
-    
+
     let content = `
       <div>
         <button class="btn back-btn">Stäng</button>
@@ -120,12 +139,12 @@ class ContactHandler {
       <ul class="contact-info">
         <p style="margin-bottom: 20px">Klicka på önskat datum för att återställa version</p>
         ${[...contact.future].reverse().map(data => {
-        return `<li class="future-time">${data.lastChanged}</li>`
-        }).join('')}
+      return `<li class="future reset-time">${data.lastChanged}</li>`
+    }).join('')}
         <li class="reset-time"><b>${contact.lastChanged} (Nuvarande)</b></li>
         ${[...contact.history].reverse().map(data => {
-          return `<li class="reset-time">${data.lastChanged}</li>`
-        }).join('')}
+      return `<li class="reset-time">${data.lastChanged}</li>`
+    }).join('')}
       </ul>
       <div class="bottom-buttons">
         <button class="btn cancel-btn">Avbryt</button>
@@ -133,9 +152,29 @@ class ContactHandler {
     `
     contactInfo.innerHTML = content
   }
-  
+  saveNewContact = async () => {
+    let newContact = {}
+    let numbers = [...document.querySelectorAll('.number-input')].map(number => number.value)
+    let emails = [...document.querySelectorAll('.email-input')].map(number => number.value)
+    newContact.firstName = document.querySelector('.firstName-input').value
+    newContact.lastName = document.querySelector('.lastName-input').value
+    newContact.numbers = numbers
+    newContact.emails = emails
+    newContact.lastChanged = new Date()
+
+    let rawFetchData = await fetch(`/api/contacts`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newContact)
+    })
+    let savedContact = await rawFetchData.json();
+
+    this.findContactAndOpen(savedContact._id)
+    this.loadAndMountContactsToList()
+  }
   saveUpdatedContact = async (contact) => {
-    // const oldContactDate = contact.lastChanged
     let newContact = { ...contact }
     let numbers = [...document.querySelectorAll('.number-input')].map(number => number.value)
     let emails = [...document.querySelectorAll('.email-input')].map(number => number.value)
@@ -144,7 +183,7 @@ class ContactHandler {
     newContact.numbers = numbers
     newContact.emails = emails
     newContact.lastChanged = new Date()
-    let oldContact = {...contact}
+    let oldContact = { ...contact }
     delete oldContact.history
     newContact.history.push({ ...oldContact })
 
@@ -159,6 +198,78 @@ class ContactHandler {
     })
     this.findContactAndOpen(contact._id)
     this.loadAndMountContactsToList()
+  }
+  findContactVersion = async (lastChangedStamp) => {
+    // If "nuvarande" is pressed, only keep the timestamp
+    let removeNuvarandeTag = lastChangedStamp.split(' ')[0]
+    
+    let rawContact = await fetch(`/api/contacts/id/${this.currentContact._id}`)
+    let contactJSON = await rawContact.json()
+    const found = await contactJSON.history.find(contact => { return contact.lastChanged === removeNuvarandeTag })
+    return found;
+  }
+  renderOlderVersionLayout = async (lastChangedStamp) => {
+    let contact = await this.findContactVersion(lastChangedStamp)
+    let content = `
+      <div>
+        <button class="btn back-btn">Stäng</button>
+      </div>
+      <div class="contact-info">
+        <div class="contact-names">
+          <input class="text-field first firstName-input" value="${contact.firstName}" />
+          <input class="text-field lastName-input" value="${contact.lastName}" />
+        </div>
+        <ul class="contact-numbers">
+          ${contact.numbers.map((number) => {
+        return `<li class="number-item"><i class="fas fa-phone-alt"></i> <input class="number-input" value="${number}" type="text" /><button class="btn remove-number">X</button></li>`
+      }).join('')}
+        </ul>
+        <button class="btn add-number">Nytt nummer</button>
+        <ul class="contact-emails">
+          ${contact.emails.map((email) => {
+        return `<li class="number-item"><i class="fas fa-envelope"></i> <input class="email-input" value="${email}" type="text" /><button class="btn remove-email">X</button></li>`
+      }).join('')}
+        </ul>
+        <button class="btn add-email">Ny epost</button>
+      </div>
+      <div class="bottom-buttons">
+        <button class="btn cancel-btn">Avbryt</button>
+        <button class="btn save-btn">Spara</button>
+      </div>
+    `
+    let contactInfo = document.querySelector('.contact-information')
+    contactInfo.innerHTML = content
+
+  }
+  renderNewContactLayout = () => {
+    let contactInfo = document.querySelector('.contact-information')
+    contactInfo.setAttribute('class', 'contact-information open')
+
+    let content = `
+      <div>
+        <button class="btn back-btn">Stäng</button>
+      </div>
+      <div class="contact-info">
+        <div class="contact-names">
+          <input class="text-field first firstName-input" placeholder="Förnamn" />
+          <input class="text-field lastName-input" placeholder="Efternamn" />
+        </div>
+        <ul class="contact-numbers">
+          <li class="number-item"><i class="fas fa-phone-alt"></i> <input class="number-input" placeholder="telefonnummer" type="text" /><button class="btn remove-number">X</button></li>
+        </ul>
+        <button class="btn add-number">Nytt nummer</button>
+        <ul class="contact-emails">
+          <li class="number-item"><i class="fas fa-envelope"></i> <input class="email-input" placeholder="epostadress" type="text" /><button class="btn remove-email">X</button></li>
+        </ul>
+        <button class="btn add-email">Ny epost</button>
+      </div>
+      <div class="bottom-buttons">
+        <button class="btn save-new-btn">Spara</button>
+      </div>
+    `
+    contactInfo.innerHTML = content
+    history.pushState({}, null, '/ny-kontakt');
+
   }
   renderEditLayout = (contact) => {
     let contactInfo = document.querySelector('.contact-information')

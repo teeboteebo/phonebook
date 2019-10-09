@@ -46,6 +46,7 @@ html body main .contact-information {
   html body main .contact-information.open {
     transition: all 0.5s;
     left: 0;
+    z-index: 20;
   }
 }
 
@@ -89,12 +90,14 @@ html body main .contact-information input {
   margin-bottom: 10px;
 }
 
-html body main .contact-information .reset-time, html body main .contact-information .future-time {
+html body main .contact-information .reset-time,
+html body main .contact-information .future-time {
   margin-bottom: 10px;
   cursor: pointer;
 }
 
-html body main .contact-information .reset-time:hover, html body main .contact-information .future-time:hover {
+html body main .contact-information .reset-time:hover,
+html body main .contact-information .future-time:hover {
   color: #276cd4;
 }
 
@@ -132,6 +135,7 @@ html body main .contact-information .contact-info .contact-emails .email-item {
 }
 
 html body main .contact-list {
+  position: relative;
   overflow-y: scroll;
   font-size: 24px;
   flex: 1;
@@ -150,4 +154,25 @@ html body main .contact-list .list-item:hover {
 
 html body main .contact-list .list-item .active {
   background-color: #81a2ad;
+}
+
+html body main .contact-list .new-contact {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  height: 70px;
+  width: 70px;
+  z-index: 10;
+  text-align: center;
+  background-color: #276cd4;
+  font-size: 30px;
+  font-weight: bold;
+  border-radius: 10000px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+html body main .contact-list .new-contact:hover {
+  background-color: #1c4e99;
 }
