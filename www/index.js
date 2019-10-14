@@ -1,18 +1,14 @@
 class App {
-
   constructor() {
     this.setupInitialGUI();
     this.contactHandler = new ContactHandler(this);
   }
-
   setupInitialGUI() {
     this.createEl('header', '<i class="far fa-address-card"></i> Kontakter', { class: 'header' });
     this.createEl('main');
     this.createEl('section', '', { class: 'contact-list' }, document.querySelector('main'));
     this.createEl('section', '', { class: 'contact-information' }, document.querySelector('main'));
   }
-
-
   createEl(newElName, html = '', attributes = {}, root = document.body) {
     let newEl = document.createElement(newElName);
     newEl.innerHTML = html;
@@ -21,18 +17,15 @@ class App {
     }
     root.append(newEl);
   }
-
 }
 
 class ContactHandler {
   constructor() {
-    // run submethods
     this.loadAndMountContactsToList();
     this.checkURLandUpdateInfo(window.location.pathname);
     this.addListeners();
     this.currentContact = ''
   }
-
   addListeners() {
     listen('click', '.list-item', e => {
       this.findContactAndOpen(e.target.id)
@@ -80,7 +73,6 @@ class ContactHandler {
     let json = await allContacts.json()
     return json
   }
-
   loadAndMountContactsToList = async () => {
     let contacts = await this.loadContacts()
     let sortedByFirstName = [...contacts].sort((a, b) => a.firstName.localeCompare(b.firstName, 'sv'))
@@ -97,7 +89,6 @@ class ContactHandler {
     listSection.append(newBtn)
 
   }
-
   clearContactSection = () => {
     let contactInfo = document.querySelector('.contact-information')
     contactInfo.setAttribute('class', contactInfo.className.replace(' open', ''))
@@ -340,25 +331,6 @@ class ContactHandler {
     }
   }
 }
-
-/*${json.numbers.map(number => {
-              return `<li class="number-item"><i class="fas fa-phone-alt"></i> ${number}</li>`
-            })}*/
-
-// <div>
-//           <button class="back-button">Stäng</button>
-//         </div>
-//         <div class="inputs">
-//           <div class="input-grp">
-//             <label class="input-label" for="${json._id + '-firstname'}">Förnamn</label><br />
-//             <input class="input-field" id="${json._id + '-firstName'}" type="text" value=${json.firstName} /> <br />
-//           </div>
-//           <div class="input-grp">
-//             <label class="input-label" for="${json._id + '-lastName'}">Efternamn</label><br />
-//             <input class="input-field" id="${json._id + '-lastName'}" type="text" value=${json.lastName} /> <br />
-//           </div>
-//         </div>
-
 
 const [listen, unlisten] = (() => {
 
