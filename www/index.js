@@ -201,11 +201,16 @@ class ContactHandler {
   findContactVersion = async (lastChangedStamp) => {
     // If "nuvarande" is pressed, only keep the timestamp
     let removeNuvarandeTag = lastChangedStamp.split(' ')[0]
-
+    
     let rawContact = await fetch(`/api/contacts/id/${this.currentContact._id}`)
     let contactJSON = await rawContact.json()
     const found = await contactJSON.history.find(contact => { return contact.lastChanged === removeNuvarandeTag })
-    return found;
+    if(!found){
+      // if current version pressed, just return the current version. It won't be in the history yet.
+      return this.currentContact
+    } else {
+      return found;
+    }
   }
   renderOlderVersionLayout = async (lastChangedStamp) => {
     let contact = await this.findContactVersion(lastChangedStamp)
@@ -234,7 +239,7 @@ class ContactHandler {
       <div class="bottom-buttons">
         <button class="btn cancel-btn">Avbryt</button>
         <button class="btn save-btn">Spara</button>
-      </div>
+Çç      </div>
     `
     let contactInfo = document.querySelector('.contact-information')
     contactInfo.innerHTML = content
