@@ -66,6 +66,9 @@ class ContactHandler {
     listen('click', '.reset-time', e => {
       this.renderOlderVersionLayout(e.target.innerHTML)
     })
+    listen('click', '.delete-btn', e => {
+      this.deleteContact(this.currentContact)
+    })
   }
 
   loadContacts = async () => {
@@ -103,7 +106,6 @@ class ContactHandler {
     } else if (urlId) {
       this.findContactAndOpen(urlId)
     }
-
   }
   addNumber = () => {
     let newNumberField = document.createElement('li')
@@ -128,10 +130,7 @@ class ContactHandler {
         <button class="btn back-btn">Stäng</button>
       </div>
       <ul class="contact-info">
-        <p style="margin-bottom: 20px">Klicka på önskat datum för att återställa version</p>
-        ${[...contact.future].reverse().map(data => {
-      return `<li class="future reset-time">${data.lastChanged}</li>`
-    }).join('')}
+        <p style="margin-bottom: 20px">Klicka på önskat datum för att öppna dåvarande version</p>
         <li class="reset-time"><b>${contact.lastChanged} (Nuvarande)</b></li>
         ${[...contact.history].reverse().map(data => {
       return `<li class="reset-time">${data.lastChanged}</li>`
@@ -142,6 +141,15 @@ class ContactHandler {
       </div>
     `
     contactInfo.innerHTML = content
+  }
+  deleteContact = async (contact) => {
+    if (confirm(`Är du säker på att du vill ta bort kontakten ${contact.firstName + ' ' + contact.lastName}?`)) {
+      await fetch(`/api/contacts/id/${contact._id}`, {
+        method: 'DELETE'
+      })
+      this.loadAndMountContactsToList()
+      this.clearContactSection()
+    }
   }
   saveNewContact = async () => {
     let newContact = {}
@@ -193,7 +201,7 @@ class ContactHandler {
   findContactVersion = async (lastChangedStamp) => {
     // If "nuvarande" is pressed, only keep the timestamp
     let removeNuvarandeTag = lastChangedStamp.split(' ')[0]
-    
+
     let rawContact = await fetch(`/api/contacts/id/${this.currentContact._id}`)
     let contactJSON = await rawContact.json()
     const found = await contactJSON.history.find(contact => { return contact.lastChanged === removeNuvarandeTag })
@@ -212,14 +220,14 @@ class ContactHandler {
         </div>
         <ul class="contact-numbers">
           ${contact.numbers.map((number) => {
-        return `<li class="number-item"><i class="fas fa-phone-alt"></i> <input class="number-input" value="${number}" type="text" /><button class="btn remove-number">X</button></li>`
-      }).join('')}
+      return `<li class="number-item"><i class="fas fa-phone-alt"></i> <input class="number-input" value="${number}" type="text" /><button class="btn remove-number">X</button></li>`
+    }).join('')}
         </ul>
         <button class="btn add-number">Nytt nummer</button>
         <ul class="contact-emails">
           ${contact.emails.map((email) => {
-        return `<li class="number-item"><i class="fas fa-envelope"></i> <input class="email-input" value="${email}" type="text" /><button class="btn remove-email">X</button></li>`
-      }).join('')}
+      return `<li class="number-item"><i class="fas fa-envelope"></i> <input class="email-input" value="${email}" type="text" /><button class="btn remove-email">X</button></li>`
+    }).join('')}
         </ul>
         <button class="btn add-email">Ny epost</button>
       </div>
@@ -324,6 +332,9 @@ class ContactHandler {
         <div class="bottom-buttons">
           <button class="btn reset-btn">Återställ</button>
           <button class="btn edit-btn">Redigera</button>
+        </div>
+        <div class="bottom-buttons">
+          <button class="btn delete-btn">Ta bort</button>
         </div>
         `
       history.pushState({}, null, '/kontakt/' + json._id);

@@ -7,7 +7,6 @@ let contactSchema = new Schema({
   numbers: { type: Array },
   emails: { type: Array },
   history: { type: Array },
-  future: { type: Array },
   lastChanged: { type: String }
 })
 

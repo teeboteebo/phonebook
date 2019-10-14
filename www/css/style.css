@@ -64,6 +64,20 @@ html body main .contact-information .btn:hover {
   cursor: pointer;
 }
 
+html body main .contact-information .delete-btn {
+  border: 1px solid #a10000;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #a10000;
+  background-color: transparent;
+}
+
+html body main .contact-information .delete-btn:hover {
+  background-color: #a10000;
+  color: #fff;
+  cursor: pointer;
+}
+
 html body main .contact-information .add-email,
 html body main .contact-information .add-number {
   margin: 15px 0;

@@ -53,6 +53,18 @@ html {
             cursor: pointer;
           }
         }
+        .delete-btn {
+          border: 1px solid #a10000;
+          border-radius: 4px;
+          font-size: 16px;
+          color: #a10000;
+          background-color: transparent;
+          &:hover {
+            background-color: #a10000;
+            color: #fff;
+            cursor: pointer;
+          }
+        }
         .add-email,
         .add-number {
           margin: 15px 0;
