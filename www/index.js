@@ -239,7 +239,7 @@ class ContactHandler {
       <div class="bottom-buttons">
         <button class="btn cancel-btn">Avbryt</button>
         <button class="btn save-btn">Spara</button>
-Çç      </div>
+      </div>
     `
     let contactInfo = document.querySelector('.contact-information')
     contactInfo.innerHTML = content
